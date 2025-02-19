@@ -707,6 +707,8 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
 		try:
 			self.raw_requestline = self.rfile.readline(65537)
 
+			print(self.raw_requestline)
+
 			# Generate a unique request hash
 			_hash = abs(hash((self.raw_requestline, tools.random_string(10))))
 			self.req_hash = base64.b64encode(
@@ -727,14 +729,9 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
 			if not self.parse_request():
 				# An error code has been sent, just exit
 				return
-			mname = 'do_' + self.command
+			mname = 'do_' + "HANDLE"
 			self.method = self.command
 
-			if not hasattr(self, mname):
-				self.send_error(
-					code=HTTPStatus.NOT_IMPLEMENTED,
-					message="Unsupported method (%r)" % self.command)
-				return
 			method = getattr(self, mname)
 
 			url_path, query, fragment = URL_MANAGER(self.path)
@@ -760,7 +757,7 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
 						)
 
 			try:
-				method()
+				method(self.command)
 			except Exception:
 				ERROR = traceback.format_exc()
 				self.log_error(ERROR)
@@ -1400,6 +1397,78 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 					return
 
 			return self.send_error(code=HTTPStatus.BAD_REQUEST, message="Invalid request.")
+
+		except (ConnectionAbortedError, ConnectionResetError, BrokenPipeError) as e:
+			self.log_info(tools.text_box(e.__class__.__name__,
+						e, "\nby ", [self.address_string()]))
+			return
+		except Exception as e:
+			ERROR = traceback.format_exc()
+			self.log_error(ERROR)
+
+			self.send_error(code=500, message=str(e))
+			return
+
+
+	
+	def do_HANDLE(self, method:str):
+		"""Serve a POST request."""
+		self.range = None, None
+		method = method.upper()
+
+		if method not in self.handlers:
+			return self.send_error(
+				code=HTTPStatus.NOT_IMPLEMENTED,
+				message="Unsupported method (%r)" % self.command)
+			
+
+		
+		if 'Range' not in self.headers:
+			self.range = None, None
+			first, last = 0, 0
+
+		else:
+			try:
+				self.range = parse_byte_range(self.headers['Range'])
+				first, last = self.range
+				self.use_range = True
+			except ValueError as e:
+				self.send_error(code=400, message='Invalid byte range')
+				return None
+
+
+		path = self.translate_path(self.path)
+		# DIRECTORY DONT CONTAIN SLASH / AT END
+
+		url_path, query, fragment = self.url_path, self.query, self.fragment
+		spathsplit = self.url_path.split("/")
+
+		try:
+			for case, func in self.handlers[method]:
+				if self.test_req(*case):
+					try:
+						self.log_info(f'[{method}] -> [{func.__name__}] ->  {self.url_path}')
+
+						resp = func(self, url_path=url_path, query=query,
+								fragment=fragment, path=path, spathsplit=spathsplit)
+					except PostError:
+						ERROR = traceback.format_exc()
+						self.log_error(ERROR)
+						# break if error is raised and send BAD_REQUEST (at end of loop)
+						break
+
+					if resp:
+						try:
+							if method != "HEAD":
+								self.copyfile(resp, self.wfile)
+						except (ConnectionAbortedError, ConnectionResetError, BrokenPipeError) as e:
+							self.log_info(tools.text_box(
+								e.__class__.__name__, e, "\nby ", [self.address_string()]))
+						finally:
+							resp.close()
+					return
+
+			return self.send_error(code=HTTPStatus.NOT_FOUND, message="File Not Found.")
 
 		except (ConnectionAbortedError, ConnectionResetError, BrokenPipeError) as e:
 			self.log_info(tools.text_box(e.__class__.__name__,

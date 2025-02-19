@@ -131,6 +131,7 @@ class TaskExecutor:
 			except Exception as e:
 				# If an exception occurs, store it in the future
 				# future.put(e)
+				print(traceback.format_exc())
 				future.set_exception(e)
 			finally:
 				# Mark the task as done in the queue
@@ -1398,7 +1399,7 @@ class PickleTable(dict):
 		try:
 			_col = self._pk.db[col]
 		except KeyError:
-			column_names = self.column_names_func(rescan=False)
+			column_names = self._column_names_func(rescan=False)
 			raise KeyError("Invalid column name:", col, "\nAvailable columns:", column_names)
 		try:
 			cell = _col[row]

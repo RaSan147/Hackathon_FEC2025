@@ -786,6 +786,8 @@ def get_student(self: SH, *args, **kwargs):
 
 	student_id = re.search(r'/api/students/([0-9]*)', self.path).group(1)
 
+	print("student_id", student_id)
+
 	student = invalid_student_id(student_id)
 	if student == 1:
 		return self.send_json({"error": "Please provide the student ID"}, code=HTTPStatus.BAD_REQUEST)
@@ -794,9 +796,20 @@ def get_student(self: SH, *args, **kwargs):
 	if student == 3:
 		return self.send_json({"error": "Student not found"}, code=HTTPStatus.NOT_FOUND)
 
+	print("student", student)
+
+	user = Dusers.find_1st_row(
+		kw=student['uid'],
+		column='uid',
+		full_match=True
+	)
+
+	if not user:
+		return self.send_json({"error": "User not found"}, code=HTTPStatus.NOT_FOUND)
+
 	return self.send_json({
 		"id": student['uid'],
-		"name": student['username'],
+		"name": user['username'],
 		"student_id": student['student_id'],
 		"department": student['dept']
 	})
@@ -879,7 +892,7 @@ def add_student(self: SH, *args, **kwargs):
 		"department": dept
 	})
 
-@SH.on_req("PUT", url="/api/students/[0-9]*")
+@SH.on_req("PUT", url_regex="/api/students/[0-9]*")
 def update_student(self: SH, *args, **kwargs):
 	"""
 	Only admin can update a student
@@ -967,7 +980,7 @@ def update_student(self: SH, *args, **kwargs):
 		"department": dept
 	})
 
-@SH.on_req("DELETE", url="/api/students/[0-9]*")
+@SH.on_req("DELETE", url_regex="/api/students/[0-9]*")
 def delete_student(self: SH, *args, **kwargs):
 	"""
 	Only admin can delete a student
