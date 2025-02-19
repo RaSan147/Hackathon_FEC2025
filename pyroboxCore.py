@@ -1415,6 +1415,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 		"""Serve a POST request."""
 		self.range = None, None
 		method = method.upper()
+		if method == "GET":
+			method = "HEAD"
 
 		if method not in self.handlers:
 			return self.send_error(
