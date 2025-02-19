@@ -629,7 +629,7 @@ def attendance_mark(self: SH, *args, **kwargs):
 
 	students_attendance_overall = dict(Counter(students_attendance_overall))
 
-	students_attendance_rate = {student_id: f"{round(students_attendance_overall[student_id]*100 / total_classes, 2)}%" for student_id in students_attendance_overall}
+	students_attendance_rate = {student_id: round(students_attendance_overall[student_id]*100 / total_classes, 2) for student_id in students_attendance_overall}
 
 	return self.send_json({
 		"class_id": class_id,
@@ -640,7 +640,7 @@ def attendance_mark(self: SH, *args, **kwargs):
 @SH.on_req("POST", url="/api/emergency")
 def emergency(self: SH, *args, **kwargs):
 	"""
-	Everyone can report an emergency
+	Everyone can see the emergency contact number
 
 	- expected JSON data: 
 	{
@@ -796,7 +796,6 @@ def get_student(self: SH, *args, **kwargs):
 
 	return self.send_json({
 		"id": student['uid'],
-		"name": student['username'],
 		"student_id": student['student_id'],
 		"department": student['dept']
 	})

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .endpoint {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .endpoint h3 {
+            margin-top: 0;
+        }
+        .method {
+            display: inline-block;
+            padding: 5px 10px;
+            margin-right: 10px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 3px;
+        }
+        .path {
+            font-weight: bold;
+        }
+        .description {
+            margin-top: 10px;
+        }
+        .params, .response {
+            margin-top: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Documentation</h1>
+
+    <div class="endpoint">
+        <h3>Health Check</h3>
+        <div class="method">GET</div>
+        <div class="path">/api/health</div>
+        <div class="description">Check the health of the API server.</div>
+        <div class="response">
+            <strong>Response:</strong>
+            <pre>
+{
+    "status": "ok",
+    "server_time": "2024-05-16T10:30:00Z"
+}
+            </pre>
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h3>Get Exam Room</h3>
+        <div class="method">GET</div>
+        <div class="path">/api/exam-rooms/&lt;student_id&gt;</div>
+        <div class="description">Retrieve the exam room and seat number for a student.</div>
+        <div class="params">
+            <strong>Parameters:</strong>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>student_id</td>
+                    <td>integer</td>
+                    <td>ID of the student</td>
+                </tr>
+            </table>
+        </div>
+        <div class="response">
+            <strong>Response:</strong>
+            <pre>
+{
+    "student_id": 20222005,
+    "exam_room": "Room 101",
+    "seat_number": "A12"
+}
+            </pre>
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h3>Wifi Login Entry</h3>
+        <div class="method">POST</div>
+        <div class="path">/api/wifi-login</div>
+        <div class="description">Record wifi login entry for a student.</div>
+        <div class="params">
+            <strong>Request Body:</strong>
+            <pre>
+{
+    "student_id": 20222001,
+    "timestamp": "2021-09-01T12:00:00Z"
+}
+            </pre>
+        </div>
+        <div class="response">
+            <strong>Response:</strong>
+            <pre>
+{
+    "message": "Login recorded",
+    "student_id": 20222001,
+    "login_count": 5
+}
+            </pre>
+        </div>
+    </div>
+
+        <div class="endpoint">
+        <h3>Library Book Details</h3>
+        <div class="method">GET</div>
+        <div class="path">/api/library/book/&lt;isbn&gt;</div>
+        <div class="description">Retrieve details of a book from the library.</div>
+        <div class="params">
+            <strong>Parameters:</strong>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>isbn</td>
+                    <td>string</td>
+                    <td>ISBN of the book</td>
+                </tr>
+            </table>
+        </div>
+        <div class="response">
+            <strong>Response:</strong>
+            <pre>
+{
+    "isbn": "978-0061120084",
+    "title": "The Alchemist",
+    "available": true,
+    "copies_left": 3
+}
+            </pre>
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h3>Borrow Book</h3>
+        <div class="method">POST</div>
+        <div class="path">/api/library/book/borrow</div>
+        <div class="description">Borrow a book from the library.</div>
+        <div class="params">
+            <strong>Request Body:</strong>
+            <pre>
+{
+    "uid": 1005,
+    "isbn": "978-0061120084"
+}
+            </pre>
+        </div>
+        <div class="response">
+            <strong>Response:</strong>
+            <pre>
+{
+    "message": "Book borrowed",
+    "user_id": 1005,
+    "isbn": "978-0061120084",
+    "copies_left": 2
+}
+            </pre>
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h3>Return Book</h3>
+        <div class="method">POST</div>
+        <div class="path">/api/library/book/return</div>
+        <div class="description">Return a book to the library.</div>
+        <div class="params">
+            <strong>Request Body:</strong>
+            <pre>
+{
+    "uid": 1005,
+    "isbn": "978-0061120084"
+}
+            </pre>
+        </div>
+        <div class="response">
+            <strong>Response:</strong>
+            <pre>
+{
+    "message": "Book returned",
+    "user_id": 1005,
+    "isbn": "978-0061120084",
+    "copies_left": 3
+}
+            </pre>
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h3>Place Canteen Order</h3>
+        <div class="method">POST</div>
+        <div class="path">/api/canteen/order</div>
+        <div class="description">Place an order in the canteen.</div>
+        <div class="params">
+            <strong>Request Body:</strong>
+            <pre>
+{
+    "student_id": 20222001,
+    "items": [
+        {
+            "item_id": "burger",
+            "quantity": 2,
+            "price": 100
+        },
+        {
+            "item_id": "pizza",
+            "quantity": 1,
+            "price": 200
+        }
+    ],
+    "order_time": "2021-09-01T12:00:00Z"
+}
+            </pre>
+        </div>
+        <div class="response">
+            <strong>Response:</strong>
+            <pre>
+{
+    "order_id": 1,
+    "status": "Order placed",
+    "total_price": 400
+}
+            </pre>
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h3>Mark Attendance</h3>
+        <div class="method">POST</div>
+        <div class="path">/api/attendance</div>
+        <div class="description">Mark attendance for a class.</div>
+        <div class="params">
+            <strong>Request Body:</strong>
+            <pre>
+{
+    "class_id": "CSE101",
+    "date": "2025-02-11",
+    "present_students": [20222001, 20222002, 20222003]
+}
+            </pre>
+        </div>
+        <div class="response">
+            <strong>Response:</strong>
+            <pre>
+{
+    "status": "Attendance recorded",
+    "total_present": 3
+}
+			</pre>
+		</div>
+	</div>
+
+	<div class="endpoint">
+		<h3>Attendance Report</h3>
+		<div class="method">GET</div>
+		<div class="path">/api/attendance/report/&lt;class_id&gt;</div>
+		<div class="description">Retrieve the attendance report for a class.</div>
+		<div class="params">
+			<strong>Parameters:</strong>
+			<table>
+				<tr>
+					<th>Name</th>
+					<th>Type</th>
+					<th>Description</th>
+				</tr>
+				<tr>
+					<td>class_id</td>
+					<td>string</td>
+					<td>ID of the class</td>
+				</tr>
+			</table>
+		</div>
+		<div class="response">
+			<strong>Response:</strong>
+			<pre>
+{
+	"class_id": "CSE101",
+	"total_classes": 10,
+	"students_attendance_rate": {
+		"20222001": 90%,
+		"20222002": 80%,
+		"20222003": 100%
+	}
+}
+			</pre>
+		</div>
+	</div>
+
+	<div class="endpoint">
+		<h3>Emergency Contact</h3>
+		<div class="method">POST</div>
+		<div class="path">/api/emergency-contact</div>
+		<div class="description">Report an emergency contact.</div>
+		<div class="params">
+			<strong>Request Body:</strong>
+			<pre>
+{
+	"type": "Medical",
+	"location": "Building A",
+	"details": "Ratul is sleepy and dying"
+}
+			</pre>
+		</div>
+		<div class="response">
+			<strong>Response:</strong>
+			<pre>
+{
+	"message": "Emergency alert sent",
+	"response_team": "Medical team"
+}
+			</pre>
+		</div>
+	</div>
+
+	<div class="endpoint">
+		<h3>Publish Notices</h3>
+		<div class="method">POST</div>
+		<div class="path">/api/notices</div>
+		<div class="description">Teachers can publish notices for students.</div>
+		<div class="params">
+			<strong>Request Body:</strong>
+			<pre>
+[	
+	{
+		"title": "Pitha Utshob",
+		"content": "Pitha Utshob will be held on 28th February 2025",
+		"date": "2025-02-11"
+	},
+	{
+		"title": "Holiday Notice",
+		"content": "The university will remain closed on 21st February 2025",
+		"date": "2025-02-11"
+	}
+]
+			</pre>
+		</div>
+		<div class="response">
+			<strong>Response:</strong>
+			<pre>
+{
+	"message": "Notices published",
+	"new_notices": 2
+}
+			</pre>
+		</div>
+	</div>
+
+
+
+	<div class="endpoint">
+		<h3>Get Student Information</h3>
+		<div class="method">GET</div>
+		<div class="path">/api/students/&lt;student_id&gt;</div>
+		<div class="description">Retrieve the information of a student. Only admin can do this.</div>
+		<div class="params">
+			<strong>Parameters:</strong>
+			<table>
+				<tr>
+					<th>Name</th>
+					<th>Type</th>
+					<th>Description</th>
+				</tr>
+				<tr>
+					<td>student_id</td>
+					<td>integer</td>
+					<td>ID of the student</td>
+				</tr>
+			</table>
+		</div>
+		<div class="response">
+			<strong>Response:</strong>
+			<pre>
+{
+	"id": 123,
+	"name": "Student Name",
+	"student_id": "20222001",
+	"department": "CSE",
+}
+			</pre>
+		</div>
+	</div>
+
+	<div class="endpoint">
+		<h3>Get Notices</h3>
+		<div class="method">GET</div>
+		<div class="path">/api/notices</div>
+		<div class="description">Retrieve the notices for students.</div>
+		<div class="params">
+			<strong>Query Parameters:</strong>
+			<table>
+				<tr>
+					<th>Name</th>
+					<th>Type</th>
+					<th>Description</th>
+				</tr>
+				<tr>
+					<td>date</td>
+					<td>string</td>
+					<td>Filter notices by date</td>
+				</tr>
+				<tr>
+					<td>per_page</td>
+					<td>integer</td>
+					<td>Number of notices per page</td>
+				</tr>
+				<tr>
+					<td>page</td>
+					<td>integer</td>
+					<td>Page number</td>
+				</tr>
+				<tr>
+					<td>sort</td>
+					<td>string</td>
+					<td>Sort order (asc or desc)</td>
+				</tr>
+			</table>
+		</div>
+		<div class="response">
+			<strong>Response:</strong>
+			<pre>
+[
+	{
+		"title": "Pitha Utshob",
+		"content": "Pitha Utshob will be held on 28th February 2025",
+		"date": "2025-02-11"
+	},
+	{
+		"title": "Holiday Notice",
+		"content": "The university will remain closed on 21st February 2025",
+		"date": "2025-02-11"
+	}
+]
+			</pre>
+		</div>
+	</div>
+
+	<div class="endpoint">
+		<h3>Create Student</h3>
+		<div class="method">POST</div>
+		<div class="path">/api/students</div>
+		<div class="description">Create a new student. Only admin can do this.</div>
+		<div class="params">
+			<strong>Request Body:</strong>
+			<pre>
+{
+	"name": "Student Name",
+	"student_id": "20222001",
+	"dept": "CSE",
+	"email": "",
+	"password": "password"
+}
+			</pre>
+		</div>
+		<div class="response">
+			<strong>Response:</strong>
+			<pre>
+{
+	"status": "Created",
+	"id": 123,
+	"name": "Student Name",
+	"student_id": "20222001",
+	"department": "CSE"
+}
+			</pre>
+		</div>
+	</div>
+
+
+    <div class="endpoint">
+        <h3>Update Student Information</h3>
+        <div class="method">PUT</div>
+        <div class="path">/api/students/&lt;student_id&gt;</div>
+        <div class="description">Update the information of a student. Only admin can do this.</div>
+        <div class="params">
+            <strong>Parameters:</strong>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>student_id</td>
+                    <td>integer</td>
+                    <td>ID of the student</td>
+                </tr>
+            </table>
+        </div>
+        <div class="request-body">
+            <strong>Request Body:</strong>
+            <pre>
+{
+  "name": "Updated Student Name",
+  "student_id": "20222099",
+  "dept": "EEE",
+  "email": "updated.student@example.com",
+  "password": "new_password"  // Only include if you want to change the password
+}
+            </pre>
+        </div>
+        <div class="response">
+            <strong>Response:</strong>
+            <pre>
+{
+    "status": "Updated",
+    "id": 123,
+    "name": "Updated Student Name",
+    "student_id": "20222099",
+    "department": "EEE"
+}
+            </pre>
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h3>Delete Student</h3>
+        <div class="method">DELETE</div>
+        <div class="path">/api/students/&lt;student_id&gt;</div>
+        <div class="description">Delete a student. Only admin can do this.</div>
+        <div class="params">
+            <strong>Parameters:</strong>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>student_id</td>
+                    <td>integer</td>
+                    <td>ID of the student</td>
+                </tr>
+            </table>
+        </div>
+        <div class="response">
+            <strong>Response:</strong>
+            <pre>
+{
+    "status": "Deleted",
+    "id": 123,
+    "student_id": "20222001"
+}
+            </pre>
+        </div>
+    </div>
+
+</body>
+</html>
