@@ -929,10 +929,16 @@ def update_student(self: SH, *args, **kwargs):
 	if student == 3:
 		return self.send_json({"error": "Student not found"}, code=HTTPStatus.NOT_FOUND)
 
-	name = json_data.get('name', student['username'])
 	dept = json_data.get('dept', student['dept'])
+
+	user = Dusers.find_1st_row(
+		kw=student['uid'],
+		column='uid',
+		full_match=True
+	)
+	name = json_data.get('name', user['username'])
 	password = json_data.get('password', None)
-	email = json_data.get('email', student['email'])
+	email = json_data.get('email', user['email'])
 
 	types_check([name, dept, email], str, self)
 	type_check(password, (str, type(None)), self)
@@ -946,12 +952,6 @@ def update_student(self: SH, *args, **kwargs):
 		return self.send_json({"error": "Please provide the email"}, code=HTTPStatus.BAD_REQUEST)
 	if password is not None and len(password) < 5:
 		return self.send_json({"error": "Password must be at least 5 characters long"}, code=HTTPStatus.BAD_REQUEST)
-
-	user = Dusers.find_1st_row(
-		kw=student['uid'],
-		column='uid',
-		full_match=True
-	)
 
 	if not user:
 		return self.send_json({"error": "User not found"}, code=HTTPStatus.NOT_FOUND)
